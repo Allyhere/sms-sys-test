@@ -14,9 +14,14 @@ FROM node:20-alpine AS production
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install && npm cache clean --force
 
 COPY --from=development /app/dist ./dist
+
+ENV NODE_ENV=production
+
+RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001 -G nodejs
+USER nestjs
 
 EXPOSE 3000
 

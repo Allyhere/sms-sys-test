@@ -3,11 +3,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: development
-    command: npm run start:dev
+      target: production
     ports:
       - "3000:3000"
     environment:
-      API_PORT: 3000
-    volumes:
-      - ./backend:/app
+      PORT: 3000
+    restart: unless-stopped
