@@ -1,12 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TwillioController } from './twillio/twillio.controller';
-import { ConversationsController } from './conversations/conversations.controller';
+import { MessagesModule } from 'src/messages/messages.module';
+import configuration from 'src/config/configuration';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, TwillioController, ConversationsController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    DatabaseModule,
+    MessagesModule,
+    ConfigModule,
+  ],
 })
 export class AppModule {}
