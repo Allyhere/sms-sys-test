@@ -1,10 +1,10 @@
 # Process
 
-Here is where I document my process as I work through the assignment.
+Here is where I document my process as I work through the assignment.I like to work with incremental development, each delivery should be a small, testable piece of functionality.
 
-## Plan
-I like to work with incremental development, each delivery should be a small, testable piece of functionality.
-
-- Create two endpoints - one receives SMS messages, other list the conversations. I'll not persist anything yet, so the webhook will just ack the response and the conversations will return a mock list.
+- I'll create two endpoints - one receives SMS messages, other list the conversations. I'll not persist anything yet, so the webhook will just ack the response and the conversations will return a mock list.
 - Implement persistance using TypeORM and Postgres. I chose TypeORM because it works swiftly with NestJS, and Postgres because it focus on consistency even when partitioned (PACELC), the latency will scale okay for this use case. As for availability, Twillio have a good retry policy, so momentary unavailability is tolerable.
-- Mock twillio at first, but implement it later, so I can easily setup and create testing scenarios
+- After making both endpoints work and pushing test messages to Postgres, I'll bootstrap a React + Vite frontend and vibe code a simple interface to view conversations
+- For the frontend, opted for a simple SPA with React, Vite and Typescript. It's a small project, the dynamic core of the page is very lightweight for now and this application have internal uses, so most of the stuff that might be useful with Next or other SSR meta frameworks, like SEO, server components and so on are not that important for this use case. I've chose Tanstack Query because it works well with application level boundaries in React, it makes easy caching and retrying requests and it works swiftly with React Router loaders.
+- I chose to improve accessibility and codebase patterns because given the correct use of prompts, it's a quality assurance easily achievable.
+- I started with a simple pooling for the SMS messages. After implementing a mock for Twillio I'll test the necessity of using SSE or Websockets for this kind of update. As for now, I'm leaning towards SSE. The workload may differ from one conversation to another, SMS seems a use case that would not have that workload that would require a real time update and contant fetches and most of the fetches would return the same data. As for long pooling, I think that we should measure the actual workload and time between messages to pin a good threshold. As for SSE, the we just need to keep the connection alive and send the messages when they arrive.
