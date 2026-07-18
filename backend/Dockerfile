@@ -25,4 +25,6 @@ USER nestjs
 
 EXPOSE 3000
 
+HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:3000/api/health || exit 1
+
 CMD ["node", "dist/main.js"]
