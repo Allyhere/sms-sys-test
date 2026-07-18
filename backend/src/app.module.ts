@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MessagesModule } from 'src/messages/messages.module';
+import { ConversationsModule } from 'src/conversations/conversations.module';
 import configuration from 'src/config/configuration';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from 'src/database/database.module';
@@ -12,6 +13,7 @@ import { DatabaseModule } from 'src/database/database.module';
     }),
     DatabaseModule,
     MessagesModule,
+    ConversationsModule,
     ConfigModule,
   ],
 })
