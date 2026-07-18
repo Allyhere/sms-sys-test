@@ -6,13 +6,17 @@ import { fetchConversations } from "./api";
 import { ErrorBoundary } from "./components";
 
 const spinner = (
-  <div className="flex justify-center py-20">
+  <div className="flex justify-center py-20" role="status" aria-live="polite">
     <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600" />
+    <span className="sr-only">Loading…</span>
   </div>
 );
 
 const errorFallback = (
-  <div className="mx-auto mt-8 max-w-md rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+  <div
+    className="mx-auto mt-8 max-w-md rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
+    role="alert"
+  >
     Failed to load conversations. Is the backend running?
   </div>
 );
@@ -26,7 +30,10 @@ export const router = createBrowserRouter([
       return { conversations };
     },
     ErrorBoundary: () => (
-      <div className="mx-auto mt-8 max-w-md rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+      <div
+        className="mx-auto mt-8 max-w-md rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
+        role="alert"
+      >
         Failed to load data. Is the backend running?
       </div>
     ),

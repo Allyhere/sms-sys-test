@@ -16,7 +16,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         </p>
         <div
           className={`mt-1.5 flex items-center gap-2 ${
-            isInbound ? "text-gray-500" : "text-white/70"
+            isInbound ? "text-gray-600" : "text-white/90"
           }`}
         >
           <StatusBadge status={message.status} light={!isInbound} />

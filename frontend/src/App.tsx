@@ -10,13 +10,16 @@ export default function App() {
   return (
     <ConversationsProvider conversations={conversations}>
       <div className="min-h-screen">
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <header className="border-b border-gray-200 bg-white">
           <h1 className="mx-auto max-w-5xl px-4 py-4 text-xl font-bold text-gray-900">
             SMS System Admin
           </h1>
         </header>
 
-        <main className="mx-auto max-w-5xl px-4 py-6">
+        <main id="main-content" className="mx-auto max-w-5xl px-4 py-6">
           <Outlet />
         </main>
       </div>

@@ -1,12 +1,15 @@
-import { fallbackStatusConfig, statusConfig } from './StatusBadge.constants';
-import type { StatusBadgeProps } from './StatusBadge.types';
+import { fallbackStatusConfig, statusConfig } from "./StatusBadge.constants";
+import type { StatusBadgeProps } from "./StatusBadge.types";
 
-export default function StatusBadge({ status, light = false }: StatusBadgeProps) {
+export default function StatusBadge({
+  status,
+  light = false,
+}: StatusBadgeProps) {
   const config = statusConfig[status] ?? fallbackStatusConfig;
 
   if (light) {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-white/70">
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-white/90">
         <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
         {config.label}
       </span>

@@ -18,7 +18,7 @@ export default function ConversationList() {
     return (
       <div className="mx-auto mt-8 max-w-md rounded-lg border border-gray-200 bg-white p-6 text-center">
         <p className="text-gray-600">No conversations yet</p>
-        <p className="mt-2 text-sm text-gray-400">
+        <p className="mt-2 text-sm text-gray-600">
           Try sending a test message:
         </p>
         <code className="mt-2 block rounded bg-gray-100 px-3 py-2 text-sm text-gray-700">
@@ -34,7 +34,8 @@ export default function ConversationList() {
         <button
           key={conv.id}
           onClick={() => navigate(`/conversations/${conv.id}`)}
-          className="block w-full cursor-pointer rounded-lg border border-gray-200 bg-white p-4 text-left transition hover:border-blue-300 hover:shadow-md"
+          aria-label={`Conversation with ${conv.phoneNumber}, ${conv.messageCount} ${conv.messageCount === 1 ? "message" : "messages"}`}
+          className="block w-full cursor-pointer rounded-lg border border-gray-200 bg-white p-4 text-left transition hover:border-blue-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-gray-900">{conv.phoneNumber}</h3>
@@ -56,13 +57,13 @@ export default function ConversationList() {
           {conv.lastMessage && (
             <div className="mt-2 flex items-center justify-between">
               <StatusBadge status={conv.lastMessage.status} />
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-600">
                 {new Date(conv.lastMessage.createdAt).toLocaleTimeString()}
               </span>
             </div>
           )}
 
-          <div className="mt-2 border-t border-gray-100 pt-2 text-xs text-gray-400">
+          <div className="mt-2 border-t border-gray-100 pt-2 text-xs text-gray-600">
             Updated {new Date(conv.updatedAt).toLocaleString()}
           </div>
         </button>
