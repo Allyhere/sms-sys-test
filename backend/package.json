@@ -21,7 +21,12 @@
     "stress:webhook": "artillery run test/stress/config/artillery-webhook.yml",
     "stress:high-concurrency": "artillery run test/stress/scenarios/high-concurrency.yml",
     "stress:burst": "artillery run test/stress/scenarios/burst-traffic.yml",
-    "stress:sustained": "artillery run test/stress/scenarios/sustained-load.yml"
+    "stress:sustained": "artillery run test/stress/scenarios/sustained-load.yml",
+    "typeorm": "typeorm-ts-node-esm",
+    "migration:generate": "npm run typeorm migration:generate -- -d src/config/data-source.ts",
+    "migration:create": "npm run typeorm migration:create",
+    "migration:run": "npm run typeorm migration:run -- -d src/config/data-source.ts",
+    "migration:revert": "npm run typeorm migration:revert -- -d src/config/data-source.ts"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",

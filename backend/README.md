@@ -57,6 +57,51 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Database migrations
+
+Migrations are managed with TypeORM's CLI. The DataSource config for CLI usage is in `src/config/data-source.ts`.
+
+### Available scripts
+
+```bash
+# Run all pending migrations
+$ npm run migration:run
+
+# Revert the last applied migration
+$ npm run migration:revert
+
+# Generate a migration from entity changes (compares entities vs database)
+$ npm run migration:generate -- src/migrations/MigrationName
+
+# Create an empty migration file (write SQL manually)
+$ npm run migration:create -- src/migrations/MigrationName
+```
+
+### How it works
+
+- **Auto-run on startup:** The app runs pending migrations automatically on boot (`migrationsRun: true` in `DatabaseModule`). No need to run them manually in production.
+- **`synchronize: false`:** Schema is never auto-synced. All schema changes go through migrations.
+- **Compiled JS in production:** The app loads migrations from `dist/migrations/*.js`. The CLI loads from `src/migrations/*.ts` via `ts-node`.
+- **Migration files:** Located in `src/migrations/`. Each file implements `MigrationInterface` with `up()` and `down()` methods.
+
+### Workflow for schema changes
+
+1. Modify or create an entity in `src/entities/`
+2. Generate a migration:
+   ```bash
+   npm run migration:generate -- src/migrations/AddNewColumn
+   ```
+3. Review the generated SQL in the new file
+4. Run the migration locally:
+   ```bash
+   npm run migration:run
+   ```
+5. Commit both the entity change and the migration file
+
+### Initial migration
+
+`0001_init.ts` creates the base schema: `conversations` and `messages` tables with enums, indexes, and foreign keys.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
