@@ -4,8 +4,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Message } from 'src/entities/message.entity';
 import { SMS_PROCESSING_QUEUE } from './queue.constants';
+import { SMS_DLQ } from './dlq.constants';
 import { SmsQueueProducer } from './queue.producer';
 import { SmsQueueConsumer } from './queue.consumer';
+import { DlqService } from './dlq.service';
+import { DlqController } from './dlq.controller';
 import { IntakeModule } from 'src/intake/intake.module';
 import { TwillioController } from 'src/twillio/twillio.controller';
 
@@ -22,11 +25,12 @@ import { TwillioController } from 'src/twillio/twillio.controller';
       }),
     }),
     BullModule.registerQueue({ name: SMS_PROCESSING_QUEUE }),
+    BullModule.registerQueue({ name: SMS_DLQ }),
     TypeOrmModule.forFeature([Message]),
     IntakeModule,
   ],
-  controllers: [TwillioController],
-  providers: [SmsQueueProducer, SmsQueueConsumer],
+  controllers: [TwillioController, DlqController],
+  providers: [SmsQueueProducer, SmsQueueConsumer, DlqService],
   exports: [SmsQueueProducer],
 })
 export class QueueModule {}
