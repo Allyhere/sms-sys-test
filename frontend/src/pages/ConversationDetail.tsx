@@ -13,7 +13,6 @@ export default function ConversationDetail() {
   } = useQuery({
     queryKey: ["conversation", id],
     queryFn: () => fetchConversation(id!),
-    refetchInterval: 3_000,
   });
 
   if (isPending) {
@@ -72,7 +71,7 @@ export default function ConversationDetail() {
       </div>
 
       <p className="mt-8 text-center text-xs text-gray-600">
-        Auto-refreshing every 3 seconds
+        Live updates via SSE
       </p>
     </div>
   );

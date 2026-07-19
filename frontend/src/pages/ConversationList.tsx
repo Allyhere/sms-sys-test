@@ -11,7 +11,6 @@ export default function ConversationList() {
     queryKey: ["conversations"],
     queryFn: fetchConversations,
     initialData: initialConversations,
-    refetchInterval: 5_000,
   });
 
   if (conversations.length === 0) {

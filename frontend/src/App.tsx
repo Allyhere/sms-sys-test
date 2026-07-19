@@ -1,11 +1,14 @@
 import { Outlet, useLoaderData } from "react-router-dom";
 import { ConversationsProvider } from "./context";
+import { useSSE } from "./hooks";
 import type { Conversation } from "./api";
 
 export default function App() {
   const { conversations } = useLoaderData() as {
     conversations: Conversation[];
   };
+
+  useSSE();
 
   return (
     <ConversationsProvider conversations={conversations}>

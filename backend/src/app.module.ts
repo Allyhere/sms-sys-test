@@ -7,6 +7,7 @@ import configuration from 'src/config/configuration';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from 'src/database/database.module';
 import { QueueModule } from 'src/queue/queue.module';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { QueueModule } from 'src/queue/queue.module';
     ConversationsModule,
     HealthModule,
     QueueModule,
+    EventsModule,
     ConfigModule,
   ],
 })
