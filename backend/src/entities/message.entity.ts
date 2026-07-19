@@ -16,6 +16,7 @@ export enum MessageDirection {
 
 export enum MessageStatus {
   RECEIVED = 'received',
+  QUEUED = 'queued',
   PROCESSING = 'processing',
   SENT = 'sent',
   DELIVERED = 'delivered',

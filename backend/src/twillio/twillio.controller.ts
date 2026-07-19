@@ -1,18 +1,16 @@
 import { Controller, Post, Body, HttpCode, UseGuards } from '@nestjs/common';
 import { IncomingSmsDto } from 'src/messages/dto/incoming-sms.dto';
-import { MessagesService } from 'src/messages/messages.service';
 import { TwilioSignatureGuard } from './twilio-signature.guard';
-import { TwilioService } from './twilio.service';
 import { MessageStatus } from 'src/entities/message.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from 'src/entities/message.entity';
+import { SmsQueueProducer } from 'src/queue/queue.producer';
 
 @Controller('api/webhooks')
 export class TwillioController {
   constructor(
-    private readonly messagesService: MessagesService,
-    private readonly twilioService: TwilioService,
+    private readonly smsQueueProducer: SmsQueueProducer,
     @InjectRepository(Message)
     private messageRepo: Repository<Message>,
   ) {}
@@ -21,14 +19,7 @@ export class TwillioController {
   @HttpCode(200)
   @UseGuards(TwilioSignatureGuard)
   async handleIncomingSms(@Body() dto: IncomingSmsDto) {
-    const message = await this.messagesService.receiveInbound(dto);
-    if (message) {
-      await this.twilioService.sendSms(
-        dto.From,
-        'Thanks for your message! We will get back to you soon.',
-        message.conversationId,
-      );
-    }
+    await this.smsQueueProducer.addJob(dto);
     return { success: true };
   }
 

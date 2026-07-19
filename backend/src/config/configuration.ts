@@ -15,4 +15,11 @@ export default () => ({
     fromNumber: process.env.TWILIO_FROM_NUMBER || '+15550000000',
     validateSignature: process.env.TWILIO_VALIDATE_SIGNATURE === 'true',
   },
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+  },
+  queue: {
+    concurrency: parseInt(process.env.QUEUE_CONCURRENCY || '5', 10),
+  },
 });

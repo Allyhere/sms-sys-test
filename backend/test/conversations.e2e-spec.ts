@@ -109,15 +109,18 @@ describe('ConversationsController (e2e)', () => {
       expect(mockConversationsService.findOne).toHaveBeenCalledWith(id);
     });
 
-    it('should return 200 with empty body when conversation is not found', async () => {
+    it('should return 400 when id is not a valid UUID', async () => {
+      await request(app.getHttpServer())
+        .get('/api/conversations/not-a-uuid')
+        .expect(400);
+    });
+
+    it('should return 404 when conversation is not found', async () => {
       mockConversationsService.findOne.mockResolvedValue(null);
 
       await request(app.getHttpServer())
-        .get('/api/conversations/nonexistent-id')
-        .expect(200)
-        .expect((res) => {
-          expect(res.body).toEqual({});
-        });
+        .get('/api/conversations/a1b2c3d4-0001-4000-8000-000000000099')
+        .expect(404);
     });
   });
 });

@@ -1,0 +1,22 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 100
+  defaults:
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+  payload:
+    - path: "../helpers/phone-numbers.csv"
+      order: sequence
+      skipHeader: true
+
+scenarios:
+  - name: "Inbound SMS webhook"
+    flow:
+      - post:
+          url: "/api/webhooks/twilio"
+          body: "MessageSid=SM{{$randomString(32)}}&From={{ from }}&To=%2B15550000000&Body=Stress+test+message& SmsStatus=received"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"

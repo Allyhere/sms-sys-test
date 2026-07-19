@@ -1,0 +1,18 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 600
+      arrivalRate: 20
+      name: "Sustained load"
+  defaults:
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+
+scenarios:
+  - name: "Sustained webhook load"
+    flow:
+      - post:
+          url: "/api/webhooks/twilio"
+          body: "MessageSid=SM{{$randomString(32)}}&From=%2B15559{{$randomNumber(100000,999999)}}&To=%2B15550000000&Body=Sustained+load+message& SmsStatus=received"
+          expect:
+            - statusCode: 200
