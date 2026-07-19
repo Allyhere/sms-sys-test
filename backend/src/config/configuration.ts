@@ -22,4 +22,16 @@ export default () => ({
   queue: {
     concurrency: parseInt(process.env.QUEUE_CONCURRENCY || '5', 10),
   },
+  rateLimit: {
+    ttl: parseInt(process.env.RATE_LIMIT_TTL || '60000', 10),
+    limit: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
+  },
+  circuitBreaker: {
+    timeout: parseInt(process.env.CB_TIMEOUT || '10000', 10),
+    errorThresholdPercentage: parseInt(
+      process.env.CB_ERROR_THRESHOLD || '50',
+      10,
+    ),
+    resetTimeout: parseInt(process.env.CB_RESET_TIMEOUT || '30000', 10),
+  },
 });

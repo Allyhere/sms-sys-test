@@ -14,3 +14,4 @@ Here is where I document my process as I work through the assignment.I like to w
 - Now I'll just add the SSE support to backend/frontend AND run /improve-codebase-architecture to review the work and find improvement opportunities
 - I was using `synchronize: true` for TypeORM for development purposes, implementing migrations to make safer and reversable database changes
 - Created a simple DLQ for BullMQ, TIL that it doesn't have a built in implementation. This will pick up any remaining failed messages that remain after the retries, enforcing the "no losing messages" constraint
+- Added a simple rate limiter (native on NestJs) and a circuit breaker to prevent abuse and protect the system from overload.

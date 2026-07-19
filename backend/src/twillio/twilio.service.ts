@@ -1,6 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Twilio as TwilioClient } from 'twilio';
+import CircuitBreaker from 'opossum';
 
 export interface SendSmsResult {
   sid: string;
@@ -8,12 +14,51 @@ export interface SendSmsResult {
 }
 
 @Injectable()
-export class TwilioService {
+export class TwilioService implements OnModuleInit {
   private readonly logger = new Logger(TwilioService.name);
+  private breaker!: CircuitBreaker<[string, string, string], SendSmsResult>;
 
   constructor(private readonly configService: ConfigService) {}
 
+  onModuleInit() {
+    this.breaker = new CircuitBreaker(
+      async (to: string, from: string, body: string) =>
+        this.sendInternal(to, from, body),
+      {
+        timeout: this.configService.get<number>('circuitBreaker.timeout')!,
+        errorThresholdPercentage: this.configService.get<number>(
+          'circuitBreaker.errorThresholdPercentage',
+        )!,
+        resetTimeout: this.configService.get<number>(
+          'circuitBreaker.resetTimeout',
+        )!,
+        rollingCountTimeout: 60_000,
+        rollingCountBuckets: 6,
+      },
+    );
+
+    this.breaker.on('open', () =>
+      this.logger.warn('Twilio circuit breaker OPENED'),
+    );
+    this.breaker.on('close', () =>
+      this.logger.log('Twilio circuit breaker CLOSED'),
+    );
+    this.breaker.fallback(() => {
+      throw new ServiceUnavailableException(
+        'Twilio service is temporarily unavailable (circuit breaker open)',
+      );
+    });
+  }
+
   async send(to: string, from: string, body: string): Promise<SendSmsResult> {
+    return this.breaker.fire(to, from, body);
+  }
+
+  private async sendInternal(
+    to: string,
+    from: string,
+    body: string,
+  ): Promise<SendSmsResult> {
     const mode = this.configService.get<string>('twilio.mode')!;
 
     if (mode === 'mock') {
