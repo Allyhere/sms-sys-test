@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { MessagesModule } from 'src/messages/messages.module';
+import { IntakeModule } from 'src/intake/intake.module';
 import { ConversationsModule } from 'src/conversations/conversations.module';
 import { HealthModule } from 'src/health/health.module';
 import configuration from 'src/config/configuration';
@@ -16,7 +16,7 @@ import { QueueModule } from 'src/queue/queue.module';
     }),
     EventEmitterModule.forRoot(),
     DatabaseModule,
-    MessagesModule,
+    IntakeModule,
     ConversationsModule,
     HealthModule,
     QueueModule,

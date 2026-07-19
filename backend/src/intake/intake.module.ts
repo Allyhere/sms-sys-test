@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Message } from 'src/entities/message.entity';
 import { Conversation } from 'src/entities/conversation.entity';
-import { MessagesService } from './messages.service';
-import { MessagesController } from './messages.controller';
 import { TwilioModule } from 'src/twillio/twilio.module';
+import { IntakeService } from './intake.service';
+import { MessagesController } from './messages.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message, Conversation]), TwilioModule],
   controllers: [MessagesController],
-  providers: [MessagesService],
-  exports: [MessagesService],
+  providers: [IntakeService],
+  exports: [IntakeService],
 })
-export class MessagesModule {}
+export class IntakeModule {}

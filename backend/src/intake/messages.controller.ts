@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { TwilioService } from 'src/twillio/twilio.service';
 import { IsString, IsNotEmpty } from 'class-validator';
+import { IntakeService } from './intake.service';
 
 class SendSmsDto {
   @IsString()
@@ -14,11 +14,10 @@ class SendSmsDto {
 
 @Controller('api/messages')
 export class MessagesController {
-  constructor(private readonly twilioService: TwilioService) {}
+  constructor(private readonly intakeService: IntakeService) {}
 
   @Post('send')
   async sendSms(@Body() dto: SendSmsDto) {
-    const result = await this.twilioService.sendSms(dto.to, dto.body, '');
-    return result;
+    return this.intakeService.sendOutbound(dto.to, dto.body);
   }
 }

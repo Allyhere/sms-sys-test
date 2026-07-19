@@ -6,8 +6,7 @@ import { Message } from 'src/entities/message.entity';
 import { SMS_PROCESSING_QUEUE } from './queue.constants';
 import { SmsQueueProducer } from './queue.producer';
 import { SmsQueueConsumer } from './queue.consumer';
-import { MessagesModule } from 'src/messages/messages.module';
-import { TwilioModule } from 'src/twillio/twilio.module';
+import { IntakeModule } from 'src/intake/intake.module';
 import { TwillioController } from 'src/twillio/twillio.controller';
 
 @Module({
@@ -24,8 +23,7 @@ import { TwillioController } from 'src/twillio/twillio.controller';
     }),
     BullModule.registerQueue({ name: SMS_PROCESSING_QUEUE }),
     TypeOrmModule.forFeature([Message]),
-    MessagesModule,
-    TwilioModule,
+    IntakeModule,
   ],
   controllers: [TwillioController],
   providers: [SmsQueueProducer, SmsQueueConsumer],
