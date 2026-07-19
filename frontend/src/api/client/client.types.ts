@@ -1,12 +1,13 @@
 export type MessageStatus =
-  | 'received'
-  | 'processing'
-  | 'sent'
-  | 'delivered'
-  | 'undelivered'
-  | 'failed';
+  | "received"
+  | "queued"
+  | "processing"
+  | "sent"
+  | "delivered"
+  | "undelivered"
+  | "failed";
 
-export type MessageDirection = 'inbound' | 'outbound';
+export type MessageDirection = "inbound" | "outbound";
 
 export interface Message {
   id: string;
