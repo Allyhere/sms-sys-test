@@ -5,9 +5,11 @@ import {
   ParseUUIDPipe,
   NotFoundException,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { ConversationsService } from './conversations.service';
 
 @Controller('api/conversations')
+@SkipThrottle()
 export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 

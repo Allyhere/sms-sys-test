@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ConfigService } from '@nestjs/config';
 import { IntakeService } from './intake.service';
 import {
@@ -11,9 +10,12 @@ import {
 import { Conversation } from 'src/entities/conversation.entity';
 import { TwilioService } from 'src/twillio/twilio.service';
 import { IncomingSmsDto } from 'src/messages/dto/incoming-sms.dto';
-import { MESSAGE_PROCESSED_EVENT } from './intake.events';
+import { SSE_REDIS_CHANNEL } from 'src/events/events.service';
 import { QueryFailedError } from 'typeorm';
 import { DatabaseError } from 'pg-protocol';
+import Redis from 'ioredis';
+
+jest.mock('ioredis');
 
 describe('IntakeService', () => {
   let service: IntakeService;
@@ -33,16 +35,25 @@ describe('IntakeService', () => {
     send: jest.fn(),
   };
 
-  const mockEventEmitter = {
-    emit: jest.fn(),
+  const mockRedisPublisher = {
+    publish: jest.fn().mockResolvedValue(1),
+    disconnect: jest.fn(),
   };
 
   const mockConfigService = {
     get: jest.fn().mockReturnValue('+15550000000'),
+    getOrThrow: jest.fn().mockImplementation((key: string) => {
+      if (key === 'redis.host') return 'localhost';
+      if (key === 'redis.port') return 6379;
+      return '+15550000000';
+    }),
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    (Redis as unknown as jest.Mock).mockImplementation(
+      () => mockRedisPublisher,
+    );
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -53,7 +64,6 @@ describe('IntakeService', () => {
           useValue: mockConversationRepo,
         },
         { provide: TwilioService, useValue: mockTwilioService },
-        { provide: EventEmitter2, useValue: mockEventEmitter },
         { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
@@ -106,12 +116,9 @@ describe('IntakeService', () => {
         '+15550000000',
         'Thanks for your message! We will get back to you soon.',
       );
-      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
-        MESSAGE_PROCESSED_EVENT,
-        expect.objectContaining({
-          conversationId: 'conv-1',
-          message: expect.objectContaining({ id: 'msg-1' }),
-        }),
+      expect(mockRedisPublisher.publish).toHaveBeenCalledWith(
+        SSE_REDIS_CHANNEL,
+        expect.stringContaining('"conversationId":"conv-1"'),
       );
     });
 
@@ -148,7 +155,7 @@ describe('IntakeService', () => {
 
       expect(result).toBeNull();
       expect(mockTwilioService.send).not.toHaveBeenCalled();
-      expect(mockEventEmitter.emit).not.toHaveBeenCalled();
+      expect(mockRedisPublisher.publish).not.toHaveBeenCalled();
     });
 
     it('should rethrow non-duplicate errors', async () => {

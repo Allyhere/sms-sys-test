@@ -1,5 +1,5 @@
 import { Controller, Post, Body, HttpCode, UseGuards } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { IncomingSmsDto } from 'src/messages/dto/incoming-sms.dto';
 import { TwilioSignatureGuard } from './twilio-signature.guard';
 import { MessageStatus } from 'src/entities/message.entity';
@@ -27,7 +27,7 @@ export class TwillioController {
 
   @Post('twilio/status')
   @HttpCode(200)
-  @Throttle({ default: { limit: 200, ttl: 60_000 } })
+  @SkipThrottle()
   @UseGuards(TwilioSignatureGuard)
   async handleStatusCallback(@Body() body: Record<string, string>) {
     const sid = body.MessageSid;

@@ -1,9 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryFailedError } from 'typeorm';
 import { DatabaseError } from 'pg-protocol';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
 import { Conversation } from 'src/entities/conversation.entity';
 import {
   Message,
@@ -13,14 +13,15 @@ import {
 
 import { TwilioService, SendSmsResult } from 'src/twillio/twilio.service';
 import { IncomingSmsDto } from 'src/messages/dto/incoming-sms.dto';
-import { MESSAGE_PROCESSED_EVENT } from './intake.events';
+import { SSE_REDIS_CHANNEL } from 'src/events/events.service';
 
 const AUTO_REPLY_TEXT =
   'Thanks for your message! We will get back to you soon.';
 
 @Injectable()
-export class IntakeService {
+export class IntakeService implements OnModuleDestroy {
   private readonly logger = new Logger(IntakeService.name);
+  private readonly publisher: Redis;
 
   constructor(
     @InjectRepository(Message)
@@ -28,9 +29,17 @@ export class IntakeService {
     @InjectRepository(Conversation)
     private conversationRepo: Repository<Conversation>,
     private readonly twilioService: TwilioService,
-    private readonly eventEmitter: EventEmitter2,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    this.publisher = new Redis({
+      host: this.configService.getOrThrow<string>('redis.host'),
+      port: this.configService.getOrThrow<number>('redis.port'),
+    });
+  }
+
+  onModuleDestroy() {
+    this.publisher.disconnect();
+  }
 
   async processInbound(dto: IncomingSmsDto): Promise<Message | null> {
     const conversation = await this.upsertConversation(dto.From);
@@ -71,7 +80,7 @@ export class IntakeService {
       conversation.id,
     );
 
-    this.eventEmitter.emit(MESSAGE_PROCESSED_EVENT, {
+    const payload = {
       message: {
         id: message.id,
         conversationId: message.conversationId,
@@ -81,7 +90,8 @@ export class IntakeService {
         status: message.status,
       },
       conversationId: message.conversationId,
-    });
+    };
+    void this.publisher.publish(SSE_REDIS_CHANNEL, JSON.stringify(payload));
 
     return message;
   }
