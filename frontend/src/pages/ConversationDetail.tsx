@@ -1,10 +1,12 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { fetchConversation } from "../api";
 import { MessageBubble } from "../components";
 
 export default function ConversationDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const {
     data: conversation,
@@ -14,6 +16,12 @@ export default function ConversationDetail() {
     queryKey: ["conversation", id],
     queryFn: () => fetchConversation(id!),
   });
+
+  useEffect(() => {
+    if (isError) {
+      navigate("/", { replace: true });
+    }
+  }, [isError, navigate]);
 
   if (isPending) {
     return (
@@ -29,14 +37,7 @@ export default function ConversationDetail() {
   }
 
   if (isError) {
-    return (
-      <div
-        className="mx-auto mt-8 max-w-md rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
-        role="alert"
-      >
-        Failed to load conversation. Is the backend running?
-      </div>
-    );
+    return null;
   }
 
   return (
