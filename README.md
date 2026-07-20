@@ -183,6 +183,34 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/api/conversations
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/api/conversations/00000000-0000-0000-0000-000000000000
 ```
 
+## Using a Real Twilio Account (Local with ngrok)
+
+```bash
+# 1. Start the stack
+make start
+
+# 2. Expose the API to the internet
+ngrok http 3000
+# → copy the https URL (e.g. https://abc123.ngrok.app)
+```
+
+Set these in your `.env`:
+
+```env
+TWILIO_MODE=real
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_FROM_NUMBER=+1555YOUR_TWILIO_NUMBER
+TWILIO_VALIDATE_SIGNATURE=true
+```
+
+Then in the [Twilio Console](https://console.twilio.com), configure your phone number's webhook:
+
+- **A message comes in** → `https://abc123.ngrok.app/api/webhooks/twilio` (POST)
+- **Status callback** → `https://abc123.ngrok.app/api/webhooks/twilio/status` (POST)
+
+Restart: `make restart`
+
 ## Development
 
 All three apps (backend, mock-twilio, frontend) share a single `.env` file at the project root. See `.env.example` for all available variables.
@@ -204,5 +232,3 @@ cd mock-twilio && npm install && npm run start:dev
 ```bash
 cd frontend && npm install && npm run dev
 ```
-
-
