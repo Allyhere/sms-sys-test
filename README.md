@@ -2,6 +2,20 @@
 
 A full-stack conversational SMS system with a NestJS backend, React frontend, and local Twilio mock service for development.
 
+## Architecture
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full architecture and design document covering:
+
+- System architecture and data flow (with Mermaid diagram)
+- How the 5-second webhook timeout is handled (BullMQ queue)
+- Message processing decoupling strategy
+- Idempotency and duplicate prevention
+- How messages are not lost
+- Data modeling decisions
+- Tradeoffs and production scaling notes
+
+See [PROCESS.md](./PROCESS.md) for the incremental development log.
+
 ## Services
 
 | Service       | Port | Description                                     |
@@ -191,13 +205,4 @@ cd mock-twilio && npm install && npm run start:dev
 cd frontend && npm install && npm run dev
 ```
 
-## Architecture
 
-See [PROCESS.md](./PROCESS.md) for the full architecture and design document covering:
-
-- System architecture and data flow
-- How the 5-second webhook timeout is handled (BullMQ queue)
-- Message processing decoupling strategy
-- Idempotency and duplicate prevention
-- Data modeling decisions
-- Tradeoffs and production scaling notes
