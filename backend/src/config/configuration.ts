@@ -19,9 +19,6 @@ export default () => ({
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
   },
-  queue: {
-    concurrency: parseInt(process.env.QUEUE_CONCURRENCY || '5', 10),
-  },
   rateLimit: {
     ttl: parseInt(process.env.RATE_LIMIT_TTL || '60000', 10),
     limit: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),

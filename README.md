@@ -26,6 +26,8 @@ See [PROCESS.md](./PROCESS.md) for the incremental development log.
 | Mock Twilio   | 4000 | Simulates Twilio for local testing              |
 | Frontend      | 80   | React + Vite admin UI for viewing conversations |
 
+SMS jobs are processed one at a time in BullMQ to preserve FIFO order.
+
 ## Quickstart
 
 ```bash

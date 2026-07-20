@@ -1,7 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Worker, Queue, Job } from 'bullmq';
-import { ConfigService } from '@nestjs/config';
 import { SMS_PROCESSING_QUEUE } from './queue.constants';
 import { SMS_DLQ } from './dlq.constants';
 import { IntakeService } from 'src/intake/intake.service';
@@ -16,18 +15,15 @@ export class SmsQueueConsumer implements OnModuleInit {
     @InjectQueue(SMS_PROCESSING_QUEUE) private readonly queue: Queue,
     @InjectQueue(SMS_DLQ) private readonly dlqQueue: Queue,
     private readonly intakeService: IntakeService,
-    private readonly configService: ConfigService,
   ) {}
 
   onModuleInit() {
-    const concurrency = this.configService.get<number>('queue.concurrency')!;
-
     this.worker = new Worker(
       SMS_PROCESSING_QUEUE,
       async (job: Job<IncomingSmsDto>) => this.processJob(job),
       {
         connection: this.queue.opts.connection,
-        concurrency,
+        concurrency: 1,
       },
     );
 

@@ -23,8 +23,8 @@ export function useSSE() {
     eventSource.addEventListener("message.processed", (event) => {
       const payload = JSON.parse(event.data) as SsePayload;
 
-      queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      queryClient.invalidateQueries({
+      void queryClient.refetchQueries({ queryKey: ["conversations"] });
+      void queryClient.refetchQueries({
         queryKey: ["conversation", payload.conversationId],
       });
     });
