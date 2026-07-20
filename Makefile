@@ -1,4 +1,4 @@
-.PHONY: help install start stop restart logs logs-api logs-mock logs-frontend logs-db logs-redis \
+.PHONY: help install start stop restart logs logs-api logs-worker logs-mock logs-frontend logs-db logs-redis \
        test test-backend test-mock test-frontend test-e2e test-all \
        stress stress-webhook stress-concurrency stress-burst stress-sustained \
        clean simulate health conversations conversation
@@ -23,6 +23,7 @@ help: ## Show this help
 	@echo "  make restart          Stop and start all containers"
 	@echo "  make logs             Tail logs for all services"
 	@echo "  make logs-api         Tail API logs"
+	@echo "  make logs-worker      Tail worker logs"
 	@echo "  make logs-mock        Tail mock-twilio logs"
 	@echo "  make logs-frontend    Tail frontend logs"
 	@echo "  make logs-db          Tail postgres logs"
@@ -81,6 +82,9 @@ logs: ## Tail all logs
 
 logs-api: ## Tail API logs
 	docker compose logs -f --tail=50 api
+
+logs-worker: ## Tail worker logs
+	docker compose logs -f --tail=50 worker
 
 logs-mock: ## Tail mock-twilio logs
 	docker compose logs -f --tail=50 mock-twilio

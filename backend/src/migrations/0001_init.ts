@@ -6,18 +6,18 @@ export class Init000117558400000000 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
-    const directionEnumExists = await queryRunner.query(
+    const directionEnumExists = (await queryRunner.query(
       `SELECT 1 FROM pg_type WHERE typname = 'message_direction_enum'`,
-    );
+    )) as unknown[];
     if (!directionEnumExists || directionEnumExists.length === 0) {
       await queryRunner.query(
         `CREATE TYPE "public"."message_direction_enum" AS ENUM('inbound', 'outbound')`,
       );
     }
 
-    const statusEnumExists = await queryRunner.query(
+    const statusEnumExists = (await queryRunner.query(
       `SELECT 1 FROM pg_type WHERE typname = 'message_status_enum'`,
-    );
+    )) as unknown[];
     if (!statusEnumExists || statusEnumExists.length === 0) {
       await queryRunner.query(
         `CREATE TYPE "public"."message_status_enum" AS ENUM('received', 'queued', 'processing', 'sent', 'delivered', 'undelivered', 'failed')`,
@@ -54,9 +54,9 @@ export class Init000117558400000000 implements MigrationInterface {
       `CREATE INDEX IF NOT EXISTS "IDX_messages_conversation_id" ON "messages" ("conversation_id")`,
     );
 
-    const fkExists = await queryRunner.query(
+    const fkExists = (await queryRunner.query(
       `SELECT 1 FROM pg_constraint WHERE conname = 'FK_messages_conversation'`,
-    );
+    )) as unknown[];
     if (!fkExists || fkExists.length === 0) {
       await queryRunner.query(
         `ALTER TABLE "messages"

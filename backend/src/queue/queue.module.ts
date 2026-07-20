@@ -6,10 +6,8 @@ import { Message } from 'src/entities/message.entity';
 import { SMS_PROCESSING_QUEUE } from './queue.constants';
 import { SMS_DLQ } from './dlq.constants';
 import { SmsQueueProducer } from './queue.producer';
-import { SmsQueueConsumer } from './queue.consumer';
 import { DlqService } from './dlq.service';
 import { DlqController } from './dlq.controller';
-import { IntakeModule } from 'src/intake/intake.module';
 import { TwillioController } from 'src/twillio/twillio.controller';
 
 @Module({
@@ -27,10 +25,9 @@ import { TwillioController } from 'src/twillio/twillio.controller';
     BullModule.registerQueue({ name: SMS_PROCESSING_QUEUE }),
     BullModule.registerQueue({ name: SMS_DLQ }),
     TypeOrmModule.forFeature([Message]),
-    IntakeModule,
   ],
   controllers: [TwillioController, DlqController],
-  providers: [SmsQueueProducer, SmsQueueConsumer, DlqService],
+  providers: [SmsQueueProducer, DlqService],
   exports: [SmsQueueProducer],
 })
 export class QueueModule {}
